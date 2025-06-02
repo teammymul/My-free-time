@@ -1,0 +1,1 @@
+rf_model = RandomForestClassifier(random_state=42, class_weight='balanced')
