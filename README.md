@@ -1,2 +1,2 @@
 # My-free-time
-Hi! i'm team.This is my workspace
+Hi! i'm Team.This is my workspace
