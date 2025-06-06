@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ตรวจสอบคะแนน</title>
+  <style>
+    :root {
+      --vh: 100%;
+    }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      font-family: sans-serif;
+      height: 100%;
+      overflow: hidden;
+    }
+
+    body {
+      height: calc(var(--vh, 1vh) * 100);
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      padding-top: 20px;
+      background-image: url('https://i.postimg.cc/6qFVjp6j/www-reallygreatsite-com.png');
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 400px;
+      padding: 2rem;
+      background-color: rgba(255, 255, 255, 0.9);
+      border-radius: 12px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.2);
+      backdrop-filter: blur(10px);
+    }
+
+    h2 {
+      text-align: center;
+      margin-bottom: 1rem;
+    }
+
+    input, button {
+      width: 100%;
+      font-size: 1rem;
+      padding: 0.75rem;
+      margin-top: 10px;
+    }
+
+    #result {
+      margin-top: 20px;
+      background-color: #f9f9f9;
+      padding: 1rem;
+      border-radius: 8px;
+      box-shadow: 0 0 5px #ccc;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>ตรวจสอบคะแนน</h2>
+    <input id="studentId" placeholder="กรอกรหัสนักเรียน เช่น 65001" />
+    <button onclick="checkScore()">ตรวจสอบ</button>
+    <div id="result"></div>
+  </div>
+
+  <script>
+    function setVh() {
+      let vh = window.innerHeight * 0.01;
+      document.documentElement.style.setProperty('--vh', `${vh}px`);
+    }
+    window.addEventListener('resize', setVh);
+    setVh();
+
+    async function checkScore() {
+      const id = document.getElementById("studentId").value.trim();
+      const resultDiv = document.getElementById("result");
+      resultDiv.innerHTML = "⏳ กำลังตรวจสอบ...";
+
+      if (!id) {
+        resultDiv.innerText = "⚠️ กรุณากรอกรหัสนักเรียน";
+        return;
+      }
+
+      const url = `https://script.google.com/macros/s/AKfycbz7UEJ_9BtfnH-BJZjdNAgt_vLRHB68xtfbY-afWj34Iue9d0-kxjBmeKs8yn9jZIdEBQ/exec?id=${id}`;
+
+      try {
+        const response = await fetch(url);
+        const data = await response.json();
+
+        if (data.error) {
+          resultDiv.innerHTML = `<span style="color: red;">❌ ${data.error}</span>`;
+        } else {
+          const color = data.status === "ผ่าน" ? "green" : "red";
+          resultDiv.innerHTML = `
+            <p><strong>รหัส:</strong> ${data.student_id}</p>
+            <p><strong>ชื่อ:</strong> ${data.name}</p>
+            <p><strong>คะแนน:</strong> ${data.score}</p>
+            <p><strong>สถานะ:</strong> <span style="color:${color}">${data.status}</span></p>
+          `;
+        }
+      } catch (err) {
+        resultDiv.innerHTML = `<span style="color:red;">❌ เกิดข้อผิดพลาดในการเชื่อมต่อ</span>`;
+      }
+    }
+  </script>
+</body>
+</html>
